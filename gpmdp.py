@@ -5,9 +5,14 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-p','--path',help='the path to the .json file containing playback info.')
-parser.add_argument('-f','--format',help='how to output the playback information. ex: "{A} - {T}" | A = artist, a = album, T = title, l = elaped, L = length, r = liked, R = disliked')
+parser.add_argument('-f','--format',help='how to output the playback information. ex: "{A} - {T}" | A = artist, a = album, T = title, l = elaped, L = length, r = one rating icon, R = two rating icons')
 args = parser.parse_args()
 
+likeIcon = ''
+likeIconFill =  ''
+dislikeIcon = ''
+dislikeIconFill = ''
+noRatingIcon = ''
 if args.path:
     filepath = args.path
 else:
@@ -21,8 +26,9 @@ with open(filepath) as f:
         if args.format:
             print(args.format.format(A=data['song']['artist'], \
             a=data['song']['album'],T=data['song']['title'], \
-            l=elapsed,L=length,r=data['rating']['liked'], \ 
-            R=data['rating']['disliked']))
+            l=elapsed,L=length,r=(likeIconFill if data['rating']['liked'] == 'true' else dislikeIconFill if data['rating']['disliked'] == 'true' else noRatingIcon), \
+            R=((likeIconFill if data['rating']['liked'] == 'true' else likeIcon) + ' ' + dislikeIconFill if data['rating']['disliked'] == 'true' else dislikeIcon)))
         else:
             print(data['song']['artist'],'-',data['song']['title'])
-    
+            
+            
